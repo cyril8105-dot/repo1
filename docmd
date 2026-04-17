@@ -1,0 +1,54 @@
+13) List images
+docker images
+or
+docker image ls
+14) Download image
+docker pull image-name
+15) Upload image
+docker push image-name
+16) Search image
+docker search image-name
+17) Delete image
+docker rmi image-name
+18) Create image from container
+docker commit container-id image-name
+19) Create image from Dockerfile
+docker build -t image-name .
+Working with Docker Containers
+20) List running containers
+docker container ls
+21) List all containers
+docker ps -a
+22) Start container
+docker start container-id
+23) Stop container
+docker stop container-id
+24) Restart container
+docker restart container-id
+25) Restart with delay
+docker restart -t 10 container-id
+26) Remove stopped container
+docker rm container-id
+27) Remove running container
+docker rm -f container-id
+28) Stop all containers
+docker stop $(docker ps -aq)
+29) Remove all containers
+docker rm $(docker ps -aq)
+30) View logs
+docker logs container-id
+31) Check ports
+docker port container-id
+32) Inspect container
+docker inspect container-id
+33) Run container
+docker run image-name
+Docker Networking
+34) List networks
+docker network ls
+35) Inspect network
+docker network inspect network-name
+36) Create network
+docker network create network-name
+37) Delete network
+docker network rm network-name
