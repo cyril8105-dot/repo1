@@ -1,0 +1,122 @@
+1. Install and Configure PostgreSQL Database
+1) Install PostgreSQL
+sudo apt install -y postgresql postgresql-common-y
+Installs PostgreSQL database server required by SonarQube to store analysis results.
+2) Enable PostgreSQL at boot
+sudo systemctl enable postgresql
+Ensures database automatically starts when system boots.
+3) Start PostgreSQL service
+sudo systemctl start postgresql
+Starts the PostgreSQL server immediately.
+4) Login as postgres user
+sudo -u postgres psql
+Opens PostgreSQL command shell to create database and user.
+5) Create SonarQube database user
+CREATE ROLE sonaruser WITH LOGIN ENCRYPTED PASSWORD 'your_password';
+Creates a dedicated user for SonarQube database connection.
+6) Create SonarQube database
+CREATE DATABASE sonarqube;
+Creates database where SonarQube stores reports and issues.
+7) Grant database privileges
+GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonaruser;
+Allows SonarQube user full access to database.
+8) Grant schema permissions
+\c sonarqube
+GRANT ALL PRIVILEGES ON SCHEMA public TO sonaruser;
+Allows user to create tables inside the database.
+9) Exit PostgreSQL
+\q
+2. Install SonarQube
+Step 10 — Update packages
+sudo apt update
+Refreshes Ubuntu package list.
+11) Install Java (Required Runtime)
+sudo apt install openjdk-17 -y
+SonarQube runs on Java.
+12) Install unzip utility
+sudo apt install unzip -y
+Used to extract SonarQube archive.
+13) Verify Java
+java -version
+Checks Java installation.
+Download sonarcube
+Downloads latest SonarQube server package.
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-25.2.0.102705.zip
+14) Extract package
+unzip sonarqube-25.2.0.zip
+15) Move to /opt directory
+sudo mv sonarqube-25.2.0 /opt/sonarqube
+Places software in system application directory.
+16) Create SonarQube user
+sudo adduser --system --no-create-home --group --disabled-login sonarqube
+Creates secure service account to run SonarQube.
+17) Give permissions
+sudo chown -R sonarqube:sonarqube /opt/sonarqube
+Allows SonarQube user to access files.
+3. Install SonarScanner CLI
+18) Download Scanner
+wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.0.1.4817-
+linux-x64.zip
+19) Extract
+unzip sonar-scanner-cli-7.0.1.zip
+20) Move directory
+sudo mv sonar-scanner-7.0.1-linux-x64 /opt/sonarscanner
+21) Configure server URL
+sudo nano /opt/sonarscanner/conf/sonar-scanner.properties
+Change:
+sonar.host.url=127.0.0.1
+Sets local SonarQube server address.
+22) Make executable
+sudo chmod +x /opt/sonarscanner/bin/sonar-scanner
+23) Create global command
+sudo ln -s /opt/sonarscanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
+24) Verify installation
+sonar-scanner -v
+4. Configure SonarQube
+25) Edit configuration file
+sudo nano /opt/sonarqube/conf/sonar.properties
+Add:
+sonar.jdbc.username=sonaruser
+sonar.jdbc.password=your_password
+sonar.jdbc.url=jdbc:postgresql://localhost:5432/sonarqube
+sonar.web.host=0.0.0.0
+sonar.web.port=9000
+Connects SonarQube to database.
+26) Increase system limits
+sudo nano /etc/sysctl.conf
+Add:
+vm.max_map_count=524288
+fs.file-max=131072
+Apply:
+sudo sysctl -p
+27) Configure user limits
+sudo nano /etc/security/limits.d/99-sonarqube.conf
+Add:
+sonarqube - nofile 131072
+sonarqube - nproc 8192
+28) Allow firewall port
+sudo ufw allow 9000/tcp
+sudo ufw reload
+Allows browser access to SonarQube UI.
+5. Create System Service
+29) Create service file
+sudo nano sonarqube.service
+Description=SonarQube service
+After=syslog.target network.target
+[Service]
+Type=forking
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+User=sonarqube
+Group=sonarqube
+Restart=always
+[Install]
+WantedBy=multi-user.target
+30) Reload systemd
+sudo systemctl daemon-reload
+31) Enable service
+sudo systemctl enable sonarqube
+32) Start SonarQube
+sudo systemctl start sonarqube
+33) Check status
+sudo systemctl status sonarqube
