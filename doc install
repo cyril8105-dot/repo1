@@ -1,0 +1,50 @@
+1) Open Docker download page
+
+Download:
+https://docs.docker.com/docker-for-windows/install
+
+2) Download and install Docker Desktop
+
+Download the latest version from the above link and run the installer.
+
+3) Open terminal to run Docker
+powershell
+Notes
+4) System requirements
+
+Docker Desktop works on:
+
+Windows 10/11 Pro (64-bit)
+Windows Server 2016 or later
+Docker Basics
+5) Docker Image
+
+A Docker image is a package containing binaries and libraries required for an application.
+
+6) Docker Container
+A running instance of an image
+Multiple containers can be created from one image
+7) Docker Client
+Interface to run Docker commands
+Example:
+docker ps
+8) Docker Daemon
+
+Background service that processes Docker commands.
+
+9) Docker Registry
+
+Online storage for Docker images.
+
+10) Public Registry
+
+Download images:
+
+docker pull nginx
+11) Private Registry
+
+Used by organizations (no direct command — requires authentication).
+
+12) Docker Host
+
+Machine where Docker is installed and containers run.
